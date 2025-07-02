@@ -3,37 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Worm Whack!</title>
+  <title>Worm Whack! - Mobile</title>
   <style>
     body {
       margin: 0;
-      background-color: #c8f0c2;
       font-family: Arial, sans-serif;
       overflow: hidden;
+      /* Prevents text selection on rapid tapping */
+      user-select: none;
+      -webkit-user-select: none;
     }
     #gameArea {
       position: relative;
       width: 100vw;
       height: 100vh;
       background: url('freepik__a-cute-cartoonish-grass-seen-from-above-mixture-of__14146.png') no-repeat center center/cover;
-      cursor: url('red-target-gun-target-115629345595usix6beg6.png'), auto;
+      cursor: url('https://findicons.com/files/icons/770/token_dark/128/target_red.png'), auto;
     }
-    /* Style for your brand logo */
     #brand-logo {
         position: absolute;
         bottom: 10px;
         right: 10px;
-        width: 120px; /* Adjust size as needed */
-        opacity: 0.8;
+        /* Use vmin to scale the logo relative to the smaller screen dimension */
+        width: 18vmin;
+        max-width: 100px; /* Set a max size for larger screens */
     }
     .worm {
       position: absolute;
-      width: 80px;
-      height: 80px;
+      /* Use vmin to make the worm size responsive */
+      width: 15vmin;
+      height: 15vmin;
+      max-width: 80px;  /* Set a max size */
+      max-height: 80px; /* Set a max size */
       background-image: url('Worm.png');
       background-size: cover;
       cursor: pointer;
-      animation: pop 2s infinite ease-in-out; /* Worms pop up and down faster */
+      animation: pop 2s infinite ease-in-out;
     }
     @keyframes pop {
       0% { transform: scale(0); opacity: 0; }
@@ -48,26 +53,19 @@
         0% { transform: scale(1) rotate(0deg); opacity: 1; }
         100% { transform: scale(0) rotate(720deg); opacity: 0; }
     }
-    #score {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 24px;
-      background: white;
-      padding: 10px 15px;
-      border-radius: 8px;
-    }
-    /* New style for the timer */
-    #timer {
+    /* Common style for score and timer */
+    .game-info {
         position: absolute;
         top: 10px;
-        right: 10px;
-        font-size: 24px;
+        /* Use vmin for responsive font size */
+        font-size: 5vmin;
         background: white;
-        padding: 10px 15px;
+        padding: 1.5vmin 2.5vmin;
         border-radius: 8px;
     }
-    /* New style for the final score overlay */
+    #score { left: 10px; }
+    #timer { right: 10px; }
+
     #final-score-overlay {
         position: absolute;
         top: 0;
@@ -76,15 +74,16 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.7);
         color: white;
-        display: none; /* Hidden by default */
+        display: none;
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        font-size: 48px;
+        /* Responsive font size for final message */
+        font-size: 8vmin;
         text-align: center;
     }
     #final-score-overlay button {
-        font-size: 24px;
+        font-size: 4vmin;
         padding: 15px 30px;
         margin-top: 20px;
         cursor: pointer;
@@ -98,8 +97,8 @@
 <body>
 
   <div id="gameArea">
-    <div id="score">Score: 0</div>
-    <div id="timer">Time: 15</div>
+    <div id="score" class="game-info">Score: 0</div>
+    <div id="timer" class="game-info">Time: 15</div>
     <img id="brand-logo" src="SPL Logo.png" alt="Your Brand Logo">
   </div>
 
@@ -123,10 +122,7 @@
     let timerInterval;
 
     function startGame() {
-        // More frequent worms: spawn every 600 milliseconds
         gameInterval = setInterval(spawnWorm, 600);
-
-        // Start the 15-second countdown
         timerInterval = setInterval(() => {
             timeLeft--;
             timerDisplay.textContent = `Time: ${timeLeft}`;
@@ -137,42 +133,56 @@
     }
 
     function endGame() {
-        clearInterval(gameInterval); // Stop spawning worms
-        clearInterval(timerInterval); // Stop the timer
+        clearInterval(gameInterval);
+        clearInterval(timerInterval);
         finalScoreText.innerHTML = `Time's Up!<br>You whacked ${score} worms!`;
-        finalScoreOverlay.style.display = 'flex'; // Show the final score screen
+        finalScoreOverlay.style.display = 'flex';
     }
 
     function spawnWorm() {
       const worm = document.createElement('div');
       worm.classList.add('worm');
-      const maxX = window.innerWidth - 80;
-      const maxY = window.innerHeight - 80;
+      gameArea.appendChild(worm);
+
+      // Get the actual size of the worm for accurate positioning
+      const wormSize = worm.getBoundingClientRect().width;
+      const maxX = window.innerWidth - wormSize;
+      const maxY = window.innerHeight - wormSize;
+
       worm.style.left = Math.random() * maxX + 'px';
       worm.style.top = Math.random() * maxY + 'px';
 
-      worm.addEventListener('click', () => {
-        score++;
-        scoreBoard.textContent = `Score: ${score}`;
-        worm.classList.add('dying');
-        setTimeout(() => {
-            if (worm.parentElement) {
-                gameArea.removeChild(worm);
-            }
-        }, 500);
-      });
+      // Function to handle whacking a worm
+      function onWormWhack(event) {
+          // Prevent default touch behavior like zooming or scrolling
+          event.preventDefault();
+          
+          score++;
+          scoreBoard.textContent = `Score: ${score}`;
+          worm.classList.add('dying');
+          
+          // Remove the event listeners so it can't be clicked again
+          worm.removeEventListener('click', onWormWhack);
+          worm.removeEventListener('touchstart', onWormWhack);
+          
+          setTimeout(() => {
+              if (worm.parentElement) {
+                  gameArea.removeChild(worm);
+              }
+          }, 500);
+      }
 
-      gameArea.appendChild(worm);
+      // Add event listeners for both click (desktop) and touchstart (mobile)
+      worm.addEventListener('click', onWormWhack);
+      worm.addEventListener('touchstart', onWormWhack);
 
-      // Remove worms if they are not clicked
       setTimeout(() => {
         if (worm.parentElement && !worm.classList.contains('dying')) {
             gameArea.removeChild(worm);
         }
-      }, 2000); // Worms disappear after 2 seconds
+      }, 2000);
     }
 
-    // Start the game when the page loads
     startGame();
   </script>
 </body>

@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Almex Presents Worm Whak!</title>
+  <title>Almex Presents Worm Whack!</title>
   <style>
     :root {
-      /* This custom variable will hold the real viewport height */
       --vh: 1vh;
     }
     body {
@@ -19,7 +18,10 @@
     #gameArea {
       position: relative;
       width: 100vw;
-      /* Use the custom variable for a stable height that respects mobile browser UI */
+      /*
+        On mobile, this will use the JS-calculated height.
+        On desktop, it will default to 100vh, which is reliable.
+      */
       height: calc(var(--vh, 1vh) * 100);
       background: url('freepik__a-cute-cartoonish-grass-seen-from-above-mixture-of__73493.png') no-repeat center center/cover;
       cursor: url('https://findicons.com/files/icons/770/token_dark/128/target_red.png'), auto;
@@ -30,9 +32,6 @@
         left: 0;
         width: 100%;
         height: 12vh;
-        /*
-          ADD YOUR IMAGE URL HERE: Replace the placeholder with the link to your PNG.
-        */
         background-image: url('panel 2.png');
         background-size: cover;
         background-position: center;
@@ -111,23 +110,23 @@
     <button onclick="location.reload()">Play Again</button>
   </div>
 
-  <audio src="https://cdn.pixabay.com/audio/2022/08/04/audio_394dd58399.mp3" autoplay loop></audio>
+  <audio src="jungle-waves-drumampbass-electronic-inspiring-promo-345013.mp3></audio>
 
   <script>
-    // FIX FOR MOBILE VIEWPORT CROPPING
     function setViewportHeight() {
-        // We get the inner window height and calculate 1% of it
         let vh = window.innerHeight * 0.01;
-        // We then set the value in the --vh custom property on the root of the document
         document.documentElement.style.setProperty('--vh', `${vh}px`);
     }
-    // Run the function initially
-    setViewportHeight();
-    // Add an event listener to run the function again when the window is resized
-    window.addEventListener('resize', setViewportHeight);
 
+    // ** THIS IS THE FIX FOR DESKTOP **
+    // We only run the height-fixing function on screens that are tablet-sized or smaller.
+    if (window.innerWidth <= 768) {
+        setViewportHeight();
+        // We also only add the resize listener on mobile devices.
+        window.addEventListener('resize', setViewportHeight);
+    }
 
-    // GAME LOGIC
+    // GAME LOGIC (remains the same)
     const gameArea = document.getElementById('gameArea');
     const scoreBoard = document.getElementById('score');
     const timerDisplay = document.getElementById('timer');

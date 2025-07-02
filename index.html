@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Worm Whack! - Mobile</title>
+  <title>Worm Whack!</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       overflow: hidden;
-      /* Prevents text selection on rapid tapping */
       user-select: none;
       -webkit-user-select: none;
     }
@@ -17,24 +16,30 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      background: url('freepik__a-cute-cartoonish-grass-seen-from-above-mixture-of__14146.png') no-repeat center center/cover;
+      background: url('freepik__a-cute-cartoonish-grass-seen-from-above-mixture-of__73493.png') no-repeat center center/cover;
       cursor: url('https://findicons.com/files/icons/770/token_dark/128/target_red.png'), auto;
     }
-    #brand-logo {
+    /*
+      FINAL CHANGE: This is the new bottom panel.
+      It's positioned at the bottom, spanning the full width.
+    */
+    #bottom-panel {
         position: absolute;
-        bottom: 10px;
-        right: 10px;
-        /* Use vmin to scale the logo relative to the smaller screen dimension */
-        width: 18vmin;
-        max-width: 100px; /* Set a max size for larger screens */
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 12vh; /* The panel will take up 12% of the screen's height */
+        /*
+          ADD YOUR IMAGE URL HERE: Replace the placeholder with the link to your PNG.
+        */
+        background-image: url('Panel.png');
+        background-size: cover; /* This makes the image fill the entire panel */
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: 10; /* Ensures the panel is above the grass but below game UI */
     }
     .worm {
       position: absolute;
-      /* Use vmin to make the worm size responsive */
-      width: 15vmin;
-      height: 15vmin;
-      max-width: 80px;  /* Set a max size */
-      max-height: 80px; /* Set a max size */
       background-image: url('Worm.png');
       background-size: cover;
       cursor: pointer;
@@ -53,11 +58,9 @@
         0% { transform: scale(1) rotate(0deg); opacity: 1; }
         100% { transform: scale(0) rotate(720deg); opacity: 0; }
     }
-    /* Common style for score and timer */
     .game-info {
         position: absolute;
         top: 10px;
-        /* Use vmin for responsive font size */
         font-size: 5vmin;
         background: white;
         padding: 1.5vmin 2.5vmin;
@@ -65,7 +68,6 @@
     }
     #score { left: 10px; }
     #timer { right: 10px; }
-
     #final-score-overlay {
         position: absolute;
         top: 0;
@@ -78,9 +80,9 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
-        /* Responsive font size for final message */
         font-size: 8vmin;
         text-align: center;
+        z-index: 20; /* Make sure this is on top of everything */
     }
     #final-score-overlay button {
         font-size: 4vmin;
@@ -99,7 +101,7 @@
   <div id="gameArea">
     <div id="score" class="game-info">Score: 0</div>
     <div id="timer" class="game-info">Time: 15</div>
-    <img id="brand-logo" src="SPL Logo.png" alt="Your Brand Logo">
+    <div id="bottom-panel"></div>
   </div>
 
   <div id="final-score-overlay">
@@ -122,7 +124,7 @@
     let timerInterval;
 
     function startGame() {
-        gameInterval = setInterval(spawnWorm, 600);
+        gameInterval = setInterval(spawnWorm, 400);
         timerInterval = setInterval(() => {
             timeLeft--;
             timerDisplay.textContent = `Time: ${timeLeft}`;
@@ -142,29 +144,29 @@
     function spawnWorm() {
       const worm = document.createElement('div');
       worm.classList.add('worm');
+
+      const randomSize = Math.random() * 10 + 10;
+      worm.style.width = `${randomSize}vmin`;
+      worm.style.height = `${randomSize}vmin`;
+
       gameArea.appendChild(worm);
 
-      // Get the actual size of the worm for accurate positioning
       const wormSize = worm.getBoundingClientRect().width;
+      // Get the height of the bottom panel so worms don't spawn under it
+      const panelHeight = document.getElementById('bottom-panel').offsetHeight;
       const maxX = window.innerWidth - wormSize;
-      const maxY = window.innerHeight - wormSize;
+      const maxY = window.innerHeight - wormSize - panelHeight; // Subtract panel height
 
       worm.style.left = Math.random() * maxX + 'px';
       worm.style.top = Math.random() * maxY + 'px';
 
-      // Function to handle whacking a worm
       function onWormWhack(event) {
-          // Prevent default touch behavior like zooming or scrolling
           event.preventDefault();
-          
           score++;
           scoreBoard.textContent = `Score: ${score}`;
           worm.classList.add('dying');
-          
-          // Remove the event listeners so it can't be clicked again
           worm.removeEventListener('click', onWormWhack);
           worm.removeEventListener('touchstart', onWormWhack);
-          
           setTimeout(() => {
               if (worm.parentElement) {
                   gameArea.removeChild(worm);
@@ -172,7 +174,6 @@
           }, 500);
       }
 
-      // Add event listeners for both click (desktop) and touchstart (mobile)
       worm.addEventListener('click', onWormWhack);
       worm.addEventListener('touchstart', onWormWhack);
 

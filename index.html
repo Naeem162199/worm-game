@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Worm Whack!</title>
+  <title>Almex Presents Worm Whak!</title>
   <style>
+    :root {
+      /* This custom variable will hold the real viewport height */
+      --vh: 1vh;
+    }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -15,28 +19,25 @@
     #gameArea {
       position: relative;
       width: 100vw;
-      height: 100vh;
+      /* Use the custom variable for a stable height that respects mobile browser UI */
+      height: calc(var(--vh, 1vh) * 100);
       background: url('freepik__a-cute-cartoonish-grass-seen-from-above-mixture-of__73493.png') no-repeat center center/cover;
       cursor: url('https://findicons.com/files/icons/770/token_dark/128/target_red.png'), auto;
     }
-    /*
-      FINAL CHANGE: This is the new bottom panel.
-      It's positioned at the bottom, spanning the full width.
-    */
     #bottom-panel {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 12vh; /* The panel will take up 12% of the screen's height */
+        height: 12vh;
         /*
           ADD YOUR IMAGE URL HERE: Replace the placeholder with the link to your PNG.
         */
-        background-image: url('panel 2.png');
-        background-size: cover; /* This makes the image fill the entire panel */
+        background-image: url('Panel.png');
+        background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        z-index: 10; /* Ensures the panel is above the grass but below game UI */
+        z-index: 10;
     }
     .worm {
       position: absolute;
@@ -65,6 +66,7 @@
         background: white;
         padding: 1.5vmin 2.5vmin;
         border-radius: 8px;
+        z-index: 20;
     }
     #score { left: 10px; }
     #timer { right: 10px; }
@@ -82,7 +84,7 @@
         flex-direction: column;
         font-size: 8vmin;
         text-align: center;
-        z-index: 20; /* Make sure this is on top of everything */
+        z-index: 30;
     }
     #final-score-overlay button {
         font-size: 4vmin;
@@ -112,6 +114,20 @@
   <audio src="https://cdn.pixabay.com/audio/2022/08/04/audio_394dd58399.mp3" autoplay loop></audio>
 
   <script>
+    // FIX FOR MOBILE VIEWPORT CROPPING
+    function setViewportHeight() {
+        // We get the inner window height and calculate 1% of it
+        let vh = window.innerHeight * 0.01;
+        // We then set the value in the --vh custom property on the root of the document
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    // Run the function initially
+    setViewportHeight();
+    // Add an event listener to run the function again when the window is resized
+    window.addEventListener('resize', setViewportHeight);
+
+
+    // GAME LOGIC
     const gameArea = document.getElementById('gameArea');
     const scoreBoard = document.getElementById('score');
     const timerDisplay = document.getElementById('timer');
@@ -152,10 +168,9 @@
       gameArea.appendChild(worm);
 
       const wormSize = worm.getBoundingClientRect().width;
-      // Get the height of the bottom panel so worms don't spawn under it
       const panelHeight = document.getElementById('bottom-panel').offsetHeight;
       const maxX = window.innerWidth - wormSize;
-      const maxY = window.innerHeight - wormSize - panelHeight; // Subtract panel height
+      const maxY = window.innerHeight - wormSize - panelHeight;
 
       worm.style.left = Math.random() * maxX + 'px';
       worm.style.top = Math.random() * maxY + 'px';

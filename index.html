@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Almex presents Worm Whak!</title>
+  <title>Almex Presents Worm Whak!</title>
   <style>
     :root {
       --vh: 1vh;
@@ -39,9 +39,11 @@
       background-size: cover;
       cursor: pointer;
       animation: pop 2s infinite ease-in-out;
+      /* --- FIX: Ensure worms appear above the background --- */
+      z-index: 5;
     }
     .threadworm {
-        background-image: url('ThreadWorm.png');
+        background-image: url('ThreadWorm.png'); /* Using a default worm for now */
     }
     .roundworm {
         background-image: url('RoundWorm.png');
@@ -90,12 +92,10 @@
     }
     #start-game-overlay {
         background-image: url('Start SCreen.png');
-        /* --- THIS IS THE FIX --- */
-        /* 'contain' ensures the whole image is visible without cropping */
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
-        background-color: #004d22; /* A dark green fallback color */
+        background-color: #004d22;
         cursor: pointer;
         z-index: 40;
     }
@@ -144,7 +144,7 @@
     <button onclick="location.reload()">Play Again</button>
   </div>
 
-  <audio id="" loop></audio>
+  <audio id="background-music" src="" loop></audio>
 
   <script>
     function setViewportHeight() {

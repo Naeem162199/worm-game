@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Worm Whack! - Multi-Worm</title>
+  <title>Almex presents Worm Whak!</title>
   <style>
     :root {
       --vh: 1vh;
@@ -40,7 +40,6 @@
       cursor: pointer;
       animation: pop 2s infinite ease-in-out;
     }
-    /* --- NEW: Image for each type of worm --- */
     .threadworm {
         background-image: url('ThreadWorm.png');
     }
@@ -89,19 +88,21 @@
         text-align: center;
         z-index: 30;
     }
-    /* --- NEW: Start screen is now an image background --- */
     #start-game-overlay {
-        background-color: rgba(0, 0, 0, 0.7);
         background-image: url('Start SCreen.png');
-        background-size: cover;
+        /* --- THIS IS THE FIX --- */
+        /* 'contain' ensures the whole image is visible without cropping */
+        background-size: contain;
         background-position: center;
+        background-repeat: no-repeat;
+        background-color: #004d22; /* A dark green fallback color */
         cursor: pointer;
         z-index: 40;
     }
     #final-score-overlay {
         background-color: rgba(0, 0, 0, 0.7);
         color: white;
-        display: none; /* Hidden by default */
+        display: none;
     }
     #final-score-overlay button {
         font-size: 4vmin;
@@ -129,10 +130,7 @@
 </head>
 <body>
 
-  <!-- This overlay is now a clickable image -->
-  <div id="start-game-overlay" class="overlay">
-    <!-- The button is gone, the whole div is clickable -->
-  </div>
+  <div id="start-game-overlay" class="overlay"></div>
 
   <div id="gameArea">
     <div id="score" class="game-info">Score: 0</div>
@@ -146,7 +144,7 @@
     <button onclick="location.reload()">Play Again</button>
   </div>
 
-  <audio id="background-music" src="" loop></audio>
+  <audio id="" loop></audio>
 
   <script>
     function setViewportHeight() {
@@ -159,7 +157,6 @@
         window.addEventListener('resize', setViewportHeight);
     }
 
-    // GAME LOGIC
     const startOverlay = document.getElementById('start-game-overlay');
     const gameArea = document.getElementById('gameArea');
     const scoreBoard = document.getElementById('score');
@@ -173,7 +170,6 @@
     let gameInterval;
     let timerInterval;
 
-    // --- NEW: The whole overlay is now the start button ---
     startOverlay.addEventListener('click', () => {
         startOverlay.style.display = 'none';
         backgroundMusic.play();
@@ -215,24 +211,22 @@
       const worm = document.createElement('div');
       worm.classList.add('worm');
 
-      // --- NEW: Logic to select a worm type based on probability ---
-      const rand = Math.random(); // Get a random number between 0 and 1
+      const rand = Math.random();
       let selectedWormType = '';
       let points = 0;
 
-      if (rand < 0.7) { // 70% chance
+      if (rand < 0.7) {
           selectedWormType = 'threadworm';
           points = 1;
-      } else if (rand < 0.95) { // 25% chance (from 0.7 to 0.95)
+      } else if (rand < 0.95) {
           selectedWormType = 'roundworm';
           points = 2;
-      } else { // 5% chance (from 0.95 to 1.0)
+      } else {
           selectedWormType = 'tapeworm';
           points = 3;
       }
 
       worm.classList.add(selectedWormType);
-      // Store the points value on the worm element itself
       worm.dataset.points = points;
 
       const randomSize = Math.random() * 10 + 10;
@@ -251,7 +245,6 @@
 
       function onWormWhack(event) {
           event.preventDefault();
-          // --- NEW: Add points based on the worm type ---
           score += parseInt(worm.dataset.points);
           scoreBoard.textContent = `Score: ${score}`;
 

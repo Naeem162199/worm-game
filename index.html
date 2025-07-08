@@ -133,16 +133,20 @@
         text-transform: uppercase;
         font-weight: bold;
     }
+    /* --- CHANGE 1: Made the result text smaller --- */
     #final-score-text {
-        font-size: 8vmin;
+        font-size: 6vmin; /* Was 8vmin */
         color: white;
     }
+    /* --- CHANGE 2: Made the result image bigger and highlighted it --- */
     #result-image {
-        width: 40vmin;
-        max-width: 200px;
+        width: 55vmin; /* Was 40vmin */
+        max-width: 280px; /* Was 200px */
         margin-top: 20px;
         border-radius: 15px;
         border: 4px solid white;
+        /* Highlight effect */
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
     }
   </style>
 </head>

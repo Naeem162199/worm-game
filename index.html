@@ -207,12 +207,12 @@
         const resultImage = document.getElementById('result-image');
         let imageUrl = '';
 
-        if (score <= 10) {
-            imageUrl = 'YOUR_IMAGE_URL_FOR_0-10_SCORE.png';
-        } else if (score <= 20) {
-            imageUrl = 'YOUR_IMAGE_URL_FOR_11-20_SCORE.png';
+        if (score <= 20) {
+            imageUrl = 'below25.png';
+        } else if (score <= 35) {
+            imageUrl = 'below35.png';
         } else {
-            imageUrl = 'YOUR_IMAGE_URL_FOR_20+_SCORE.png';
+            imageUrl = '35+.png';
         }
 
         resultImage.src = imageUrl;

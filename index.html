@@ -108,7 +108,7 @@
         z-index: 30;
     }
     #start-game-overlay {
-        background-image: url('startscreen fixed.png');
+        background-image: url('Start Screen.png');
         background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
@@ -212,11 +212,11 @@
         let imageUrl = '';
 
         if (score <= 20) {
-            imageUrl = 'below25.png';
+            imageUrl = 'Below25.png';
         } else if (score <= 35) {
-            imageUrl = 'below35.png';
+            imageUrl = 'Below35.png';
         } else {
-            imageUrl = '35+.png';
+            imageUrl = 'Above35.png';
         }
 
         resultImage.src = imageUrl;
